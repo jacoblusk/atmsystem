@@ -1,12 +1,15 @@
-package server
+package atmsystem
+
+import (
+	_ "net/rpc"
+)
 
 type Server struct {
 }
 
 func NewServer() *Server {
-	Bank bank
+	return new(Server)
 }
 
 func (s *Server) Start() {
-	rpc.Register()
 }

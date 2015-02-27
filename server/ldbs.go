@@ -1,21 +1,22 @@
 package main
 
 import (
+	"encoding/binary"
 	"github.com/jacoblusk/atmsystem"
 	"github.com/syndtr/goleveldb/leveldb"
-	"encoding/binary"
 )
 
 type LDBStorage struct {
 	DB *leveldb.DB
 }
 
-func(ldbs *LDBStorage) Open(filename string) error {
+func (ldbs *LDBStorage) Open(filename string) error {
 	var err error
 	ldbs.DB, err = leveldb.OpenFile(filename, nil)
+	return err
 }
 
-func(ldbs *LDBStorage) Close() error {
+func (ldbs *LDBStorage) Close() error {
 	return ldbs.DB.Close()
 }
 
@@ -24,21 +25,22 @@ func (ldbs *LDBStorage) PutAccount(a atmsystem.Account) error {
 	if err != nil {
 		return err
 	}
-	
-	bs := [4]byte
-	binary.LittleEndian.PutUint32(bs, a.ID)
+
+	bs := make([]byte, 4)
+	binary.LittleEndian.PutUint32(bs, uint32(a.ID))
 	err = ldbs.DB.Put(bs, bson, nil)
+	return err
 }
 
-func(ldbs *LDBStorage) UpdateBalance(id int, int balance) error {
-	bs := [4]byte
-	binary.LittleEndian.PutUint32(bs, id)
+func (ldbs *LDBStorage) UpdateBalance(id, balance int) error {
+	bs := make([]byte, 4)
+	binary.LittleEndian.PutUint32(bs, uint32(id))
 	a, err := ldbs.GetAccount(id)
 	if err != nil {
 		return err
 	}
 
-	a.Balance = balance; //update the balance
+	a.Balance = balance //update the balance
 	var bson []byte
 	bson, err = a.MarshalBSON() //reserialize
 	if err != nil {
@@ -52,15 +54,15 @@ func(ldbs *LDBStorage) UpdateBalance(id int, int balance) error {
 	return err
 }
 
-func (ldbs *LDBStorage) GetAccount(id int) error {
-	bs := [4]byte
-	binary.LittleEndian.PutUint32(bs, id)
+func (ldbs *LDBStorage) GetAccount(id int) (*atmsystem.Account, error) {
+	bs := make([]byte, 4)
+	binary.LittleEndian.PutUint32(bs, uint32(id))
 	data, err := ldbs.DB.Get(bs, nil)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	account = new(atmsystem.Account)
+	account := new(atmsystem.Account)
 	err = account.UnmarshalBSON(data)
 	return account, err
 }
