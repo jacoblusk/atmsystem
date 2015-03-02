@@ -55,6 +55,10 @@ func (b *Bank) Withdraw(t, reply *Transaction) error {
 		return errors.New("balance exceeded")
 	}
 
+	if t.Amount < 0 {
+		return errors.New("amount less than 0")
+	}
+
 	account.Balance -= t.Amount
 	reply.ID = account.ID
 	reply.Amount = account.Balance
