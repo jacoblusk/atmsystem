@@ -27,9 +27,9 @@ func (c *Client) Deposit(id, amount int) (int, error) {
 	return reply.Amount, nil
 }
 
-func (c *Client) Withdrawl(id, amount int) (int, error) {
+func (c *Client) Withdraw(id, amount int) (int, error) {
 	var reply Transaction
-	err := c.connection.Call("Bank.Withdrawl", &Transaction{ID: id, Amount: amount}, &reply)
+	err := c.connection.Call("Bank.Withdraw", &Transaction{ID: id, Amount: amount}, &reply)
 	if err != nil {
 		return 0, err
 	}
