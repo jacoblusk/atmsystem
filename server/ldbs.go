@@ -20,7 +20,7 @@ func (ldbs *LDBStorage) Close() error {
 	return ldbs.DB.Close()
 }
 
-func (ldbs *LDBStorage) PutAccount(a atmsystem.Account) error {
+func (ldbs *LDBStorage) PutAccount(a *atmsystem.Account) error {
 	bson, err := a.MarshalBSON()
 	if err != nil {
 		return err

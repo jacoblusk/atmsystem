@@ -5,7 +5,7 @@ import (
 )
 
 type Bank struct {
-	storage Storage
+	Storage Storage
 }
 
 type Transaction struct {
@@ -13,7 +13,7 @@ type Transaction struct {
 }
 
 func (b *Bank) Deposit(t, r *Transaction) error {
-	a, err := b.storage.GetAccount(t.ID)
+	a, err := b.Storage.GetAccount(t.ID)
 	if err != nil {
 		return err
 	}
@@ -23,12 +23,12 @@ func (b *Bank) Deposit(t, r *Transaction) error {
 	r.ID = a.ID
 	r.Amount = newBalance
 
-	err = b.storage.UpdateBalance(a.ID, newBalance)
+	err = b.Storage.UpdateBalance(a.ID, newBalance)
 	return err
 }
 
 func (b *Bank) Withdrawl(t, r *Transaction) error {
-	a, err := b.storage.GetAccount(t.ID)
+	a, err := b.Storage.GetAccount(t.ID)
 	if err != nil {
 		return err
 	}
@@ -40,12 +40,12 @@ func (b *Bank) Withdrawl(t, r *Transaction) error {
 	newBalance := a.Balance - t.Amount
 	r.ID = a.ID
 	r.Amount = newBalance
-	err = b.storage.UpdateBalance(a.ID, newBalance)
+	err = b.Storage.UpdateBalance(a.ID, newBalance)
 	return err
 }
 
 func (b *Bank) Inquiry(id int, r *Transaction) error {
-	a, err := b.storage.GetAccount(id)
+	a, err := b.Storage.GetAccount(id)
 	if err != nil {
 		return err
 	}
