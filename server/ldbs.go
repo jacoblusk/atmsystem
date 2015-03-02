@@ -32,25 +32,10 @@ func (ldbs *LDBStorage) PutAccount(a *atmsystem.Account) error {
 	return err
 }
 
-func (ldbs *LDBStorage) UpdateBalance(id, balance int) error {
+func (ldbs *LDBStorage) DeleteAccount(id int) error {
 	bs := make([]byte, 4)
 	binary.LittleEndian.PutUint32(bs, uint32(id))
-	a, err := ldbs.GetAccount(id)
-	if err != nil {
-		return err
-	}
-
-	a.Balance = balance //update the balance
-	var bson []byte
-	bson, err = a.MarshalBSON() //reserialize
-	if err != nil {
-		return err
-	}
-
-	batch := new(leveldb.Batch)
-	batch.Delete(bs)
-	batch.Put(bs, bson)
-	err = ldbs.DB.Write(batch, nil)
+	err := ldbs.DB.Delete(bs, nil)
 	return err
 }
 
@@ -65,4 +50,10 @@ func (ldbs *LDBStorage) GetAccount(id int) (*atmsystem.Account, error) {
 	account := new(atmsystem.Account)
 	err = account.UnmarshalBSON(data)
 	return account, err
+}
+
+func (ldbs *LDBStorage) Exists(id int) (bool, error) {
+	bs := make([]byte, 4)
+	binary.LittleEndian.PutUint32(bs, uint32(id))
+	return ldbs.DB.Has(bs, nil)
 }

@@ -5,9 +5,12 @@ import (
 	"fmt"
 	"github.com/jacoblusk/atmsystem"
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
-const dbFilename = "bank.ldb"
+const dbFilename = "bank_ldb_data"
 
 func main() {
 	var port int
@@ -19,14 +22,33 @@ func main() {
 		log.Fatal(err)
 	}
 
-	account := new(atmsystem.Account)
-	account.ID = 100
-	account.Balance = 1000
-
-	err = ldbs.PutAccount(account)
-	if err != nil {
+	//close the database file on sigterm/interrupt ^c
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	signal.Notify(c, syscall.SIGTERM)
+	go func() {
+		<-c
+		log.Printf("interrupt detected, closing %s", dbFilename)
 		ldbs.Close()
+		os.Exit(0)
+	}()
+
+	var ok bool
+	ok, err = ldbs.Exists(100)
+	if err != nil {
 		log.Fatal(err)
+	}
+
+	//keep the account persistent
+	if !ok {
+		account := new(atmsystem.Account)
+		account.ID = 100
+		account.Balance = 1000
+		err = ldbs.PutAccount(account)
+		if err != nil {
+			ldbs.Close()
+			log.Fatal(err)
+		}
 	}
 
 	server := atmsystem.NewServer(ldbs)

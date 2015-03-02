@@ -6,23 +6,22 @@ import (
 )
 
 type Server struct {
-	Bank     *Bank
-	Listener net.Listener
+	bank     *Bank
+	listener net.Listener
 }
 
 func NewServer(storage Storage) *Server {
 	s := new(Server)
-	s.Bank = new(Bank)
-	s.Bank.Storage = storage
+	s.bank = NewBank(storage)
 	return s
 }
 
 func (s *Server) Start(laddr string) (err error) {
-	rpc.Register(s.Bank)
-	s.Listener, err = net.Listen("tcp", laddr)
+	rpc.Register(s.bank)
+	s.listener, err = net.Listen("tcp", laddr)
 	if err != nil {
 		return nil
 	}
-	rpc.Accept(s.Listener)
+	rpc.Accept(s.listener)
 	return nil
 }
