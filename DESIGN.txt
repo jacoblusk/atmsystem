@@ -1,0 +1,53 @@
+Design
+======
+
+Structure for an Account object
+
+account {
+	id
+	balance
+}
+
+Have objects Server, and Bank, where Server contains Bank as a member
+
+server {
+	bank
+}
+
+Where the bank object contains a Storage interface
+
+bank {
+	storage #interface
+	...
+}
+
+The Storage interface should contain methods for Putting and Getting Accounts
+and Opening and Closing a database file. We assume the Storage acts like a
+hash table, so we can update an account by just providing the key and a new
+account object.
+
+storage #interface {
+	open(filename)
+	close(filename)
+	put_acccount(account)
+	get_account(id)
+}
+
+The bank should provide methods Deposit, Withdraw, and Inquiry for 
+calling by an RPC interface.
+
+bank {
+	...
+	deposit(id, amount)
+	withdraw(id, amount)
+	inquiry(id)
+}
+
+Implementation
+--------------
+
+The database system we've provided is in ldbs.go which provides methods
+that implement the Storage interface around a leveldb database. We use
+net/rpc for serving our RPC framework which can be found in bank.go. We
+protect against race conditions by using a mutex for non-atomic database
+reads/writes, (such as with Withdraw/Deposit).

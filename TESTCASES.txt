@@ -1,0 +1,21 @@
+> server -port 1234
+... (time passed while server running)
+2015/03/02 03:41:28 interrupt detected, closing bank_ldb_data
+
+> client localhost 1234 inquiry 100
+The current balance of user 100 is $1100
+> client localhost 1234 inquiry 0
+2015/03/02 03:36:59 leveldb: not found
+
+> client localhost 1234 withdraw 100 10000
+2015/03/02 03:37:13 balance exceeded
+
+> client localhost 1234 withdraw 100 50
+Successfully withdrew $100 from account 50, remaining balance $1050
+> client localhost 1234 withdraw 100 -50
+2015/03/02 03:37:23 amount less than 0
+
+> client localhost 1234 deposit 100 50
+Successfully deposited $100 to account 50, remaining balance $1100
+> client localhost 1234 deposit 100 -50
+2015/03/02 03:37:41 amount less than 0
