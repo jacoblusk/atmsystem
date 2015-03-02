@@ -2,50 +2,69 @@ package atmsystem
 
 import (
 	"errors"
+	"sync"
 )
 
 type Bank struct {
-	Storage Storage
+	storage Storage
+	mutex   *sync.Mutex
+}
+
+func NewBank(s Storage) *Bank {
+	b := new(Bank)
+	b.storage = s
+	b.mutex = new(sync.Mutex)
+	return b
 }
 
 type Transaction struct {
 	ID, Amount int
 }
 
-func (b *Bank) Deposit(t, r *Transaction) error {
-	a, err := b.Storage.GetAccount(t.ID)
+func (b *Bank) Deposit(t, reply *Transaction) error {
+	b.mutex.Lock()
+	defer b.mutex.Unlock()
+
+	account, err := b.storage.GetAccount(t.ID)
 	if err != nil {
 		return err
 	}
 
-	newBalance := a.Balance + t.Amount
+	if t.Amount < 0 {
+		return errors.New("amount less than 0")
+	}
 
-	r.ID = a.ID
-	r.Amount = newBalance
+	account.Balance += t.Amount
+	reply.ID = account.ID
+	reply.Amount = account.Balance
 
-	err = b.Storage.UpdateBalance(a.ID, newBalance)
+	err = b.storage.PutAccount(account)
 	return err
 }
 
-func (b *Bank) Withdrawl(t, r *Transaction) error {
-	a, err := b.Storage.GetAccount(t.ID)
+func (b *Bank) Withdraw(t, reply *Transaction) error {
+	b.mutex.Lock()
+	defer b.mutex.Unlock()
+
+	account, err := b.storage.GetAccount(t.ID)
 	if err != nil {
 		return err
 	}
 
-	if t.Amount > a.Balance {
-		return errors.New("Balance exceeded")
+	if t.Amount > account.Balance {
+		return errors.New("balance exceeded")
 	}
 
-	newBalance := a.Balance - t.Amount
-	r.ID = a.ID
-	r.Amount = newBalance
-	err = b.Storage.UpdateBalance(a.ID, newBalance)
+	account.Balance -= t.Amount
+	reply.ID = account.ID
+	reply.Amount = account.Balance
+
+	err = b.storage.PutAccount(account)
 	return err
 }
 
 func (b *Bank) Inquiry(id int, r *Transaction) error {
-	a, err := b.Storage.GetAccount(id)
+	a, err := b.storage.GetAccount(id)
 	if err != nil {
 		return err
 	}
