@@ -21,20 +21,14 @@ bank {
 	...
 }
 
-The Storage interface should contain methods for Putting and Getting Accounts
-and Opening and Closing a database file. We assume the Storage acts like a
-hash table, so we can update an account by just providing the key and a new
-account object.
+The Storage interface should contain methods for Putting and Getting Accounts. We assume the Storage acts like a hash table, so we can update an account by just providing the key and a new account object.
 
 storage #interface {
-	open(filename)
-	close(filename)
 	put_acccount(account)
 	get_account(id)
 }
 
-The bank should provide methods Deposit, Withdraw, and Inquiry for 
-calling by an RPC interface.
+The bank should provide methods Deposit, Withdraw, and Inquiry for calling by an RPC interface.
 
 bank {
 	...
