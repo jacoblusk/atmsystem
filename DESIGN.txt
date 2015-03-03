@@ -1,3 +1,5 @@
+Both Derrick Cohodas and I (Jacob Lusk) worked on the design specification collaboratively.
+
 Design
 ======
 

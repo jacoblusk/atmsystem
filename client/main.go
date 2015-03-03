@@ -18,7 +18,7 @@ func main() {
 	laddr := fmt.Sprintf("%s:%s", args[1], args[2])
 	client, err := atmsystem.NewClient(laddr, time.Second*60)
 
-	//very ugly argument parsing, but it works!
+	//Very ugly argument parsing, but it works!
 	switch args[3] {
 	case "inquiry":
 		var id, balance int

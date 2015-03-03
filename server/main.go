@@ -10,6 +10,7 @@ import (
 	"syscall"
 )
 
+//The name of the leveldb folder to use for storage
 const dbFilename = "bank_ldb_data"
 
 func main() {
@@ -22,7 +23,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	//close the database file on sigterm/interrupt ^c
+	//Close the database file on sigterm/interrupt ^c
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 	signal.Notify(c, syscall.SIGTERM)
@@ -39,7 +40,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	//keep the account persistent
+	//Keep the account persistent
 	if !ok {
 		account := new(atmsystem.Account)
 		account.ID = 100

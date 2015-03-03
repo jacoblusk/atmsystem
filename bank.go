@@ -5,6 +5,7 @@ import (
 	"sync"
 )
 
+//Here we use a mutex for Withdraw and Deposit as there is a possible race condition between checking if the account exists and depositing. This assignment doesn't have us deleting user acctions, but for scalability reasons it is used.
 type Bank struct {
 	storage Storage
 	mutex   *sync.Mutex
@@ -17,6 +18,7 @@ func NewBank(s Storage) *Bank {
 	return b
 }
 
+//This is the object that is passed as both a request and a reply, it could be abstracted further to have a seperate reply object for each RPC method, but that wasn't needed for this assignment.
 type Transaction struct {
 	ID, Amount int
 }
@@ -30,6 +32,7 @@ func (b *Bank) Deposit(t, reply *Transaction) error {
 		return err
 	}
 
+	//Verify we aren't depositing negative money
 	if t.Amount < 0 {
 		return errors.New("amount less than 0")
 	}
@@ -51,6 +54,7 @@ func (b *Bank) Withdraw(t, reply *Transaction) error {
 		return err
 	}
 
+	//Verify that we aren't overdrafting
 	if t.Amount > account.Balance {
 		return errors.New("balance exceeded")
 	}

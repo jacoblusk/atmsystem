@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+//Here we wrap our client object with methods for interfacing with the RPC interface that is hosted by the server, this abstracts the need for the client to need to know about the specific method names that the server provides.
+
 type Client struct {
 	connection *rpc.Client
 }

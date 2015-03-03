@@ -6,6 +6,8 @@ import (
 	"github.com/syndtr/goleveldb/leveldb"
 )
 
+//We use encoding/binary for encoding the account ids as the key for use in stoage for leveldb. Our account object already has exported methods for marshaling to a byte array using bson.
+
 type LDBStorage struct {
 	DB *leveldb.DB
 }

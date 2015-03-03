@@ -1,5 +1,7 @@
 package atmsystem
 
+//We use bson to serialize the object as leveldb is a very low level storage system and requires both key and value to be a byte array. So we take advantage of bson's ability to serialize go structures and use this for our value.
+
 import (
 	"gopkg.in/mgo.v2/bson"
 )
